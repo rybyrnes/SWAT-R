@@ -15,8 +15,12 @@ swatpathsoil <- "/Volumes/GoogleDrive/My Drive/SWAT R Analysis/SWAT_Soil"
 ### Read in HRU.text data from Access export ###
 swat.output <- read.table(file.path(swatpath, "hru2.txt"), header = TRUE, fill = TRUE, sep=',')
 
-### Read in SSJV SSURGO and HRU_Info ###
-hru.soil <- read.table(file.path(swatpathsoil, "SSJV_SSURGO_HRUINFO_JOINED.txt"), header = TRUE, fill = TRUE, sep=',')
+### Read in SSJV SSURGO and HRU data  ###
+ssjv.hru <- read.table(file.path(swatpathsoil, "SSJV_SSURGO_HRUINFO_JOINED.txt"), header = TRUE, fill = TRUE, sep=',')
+
+### Read in TAMU soil data ###
+
+ssjv.soil <- read.csv(file.path(swatpathsoil, "SOIL_tamu.csv"), header = TRUE, fill = TRUE, sep=',')
 
 ### Merge datasets by HRUGIS ###
 
