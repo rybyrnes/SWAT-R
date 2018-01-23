@@ -15,17 +15,12 @@ swatpathsoil <- "/Volumes/GoogleDrive/My Drive/SWAT R Analysis/SWAT_Soil"
 ### Read in HRU.text data from Access export ###
 swat.output <- read.table(file.path(swatpath, "hru2.txt"), header = TRUE, fill = TRUE, sep=',')
 
-### Read in SSJV SSURGO and HRU data  ###
-ssjv.hru <- read.table(file.path(swatpathsoil, "SSJV_SSURGO_HRUINFO_JOINED.txt"), header = TRUE, fill = TRUE, sep=',')
+### Read in HRU_info data  ###
+hru.info <- read.table(file.path(swatpathsoil, "FINAL_HRU.txt"), header = TRUE, fill = TRUE, sep=',')
 
-### Read in TAMU soil data ###
+### Read in TAMU  and SSJV soil data ###
 
-ssjv.soil <- read.csv(file.path(swatpathsoil, "SOIL_tamu.csv"), header = TRUE, fill = TRUE, sep=',')
-
-### Merge datasets by HRUGIS ###
-
-swat.hru <- merge(swat.output, hru.soil, by="HRUGIS")
-
+ssjv.tamu.soil <- read.table(file.path(swatpathsoil, "SSJV_TAMU_JOINED.txt"), header = TRUE, fill = TRUE, sep=',')
 
 ##################################################################################################
 
@@ -77,12 +72,16 @@ file <- 'C:/Users/rbyrnes/Desktop/SWAT R Analysis/SWAT Output/output2.hru'
 w <- c(1,2,3,4,5,6)
 swat.hru.test <- swat_readOutputhru(file, col=w,ver=2012)
 
-###################################################################################################
-############################# Using swat.hru object ###############################################
+##################################################################################################
+
+### Merge hru.info to swat.output by HRUGIS ###
+hru.info.swat.output <- merge(hru.info, swat.output, by="HRUGIS")
+
+### Merge hru.info.swat.output to ssjv.tamu.soil
+swat.all.merged <- merge(hru.info.swat.output, ssjv.tamu.soil, by.x = "SOIL_CODE", by.y = "SEQN")
 
 ### Calculate acres from km2 and add ACRE column ###
-
-swat.hru$AREAacre <- swat.hru$AREAkm2*247.105
+swat.all.merged$AREAacre <- swat.all.merged$AREAkm2*247.105
 
 
 
