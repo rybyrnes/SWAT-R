@@ -7,26 +7,39 @@ library("doBy")
 library("ggplot2")
 
 ### Set Directory Path - Generic and change as needed ###
-swatpath <- "/Volumes/GoogleDrive/My Drive/SWAT R Analysis/SWAT Output"
-swatpathsoil <- "/Volumes/GoogleDrive/My Drive/SWAT R Analysis/SWAT_Soil" 
+swatpath <- "C:/Users/rbyrnes/Google Drive/SWAT R Analysis/SWAT Output"
+swatpathsoil <- "C:/Users/rbyrnes/Google Drive/SWAT R Analysis/SWAT_Soil"
 
 ##################################################################################################
+########################### Read in data and merge dataframes ####################################
 
-### Read in HRU.text data from Access export ###
+# Read in HRU.text data from Access export #
 swat.output <- read.table(file.path(swatpath, "hru2.txt"), header = TRUE, fill = TRUE, sep=',')
 swat.output$AREAacre <- swat.output$AREAkm2*247.105
 
-### Read in HRU_info data  ###
+# Read in HRU_info data  #
 hru.info <- read.table(file.path(swatpathsoil, "FINAL_HRU.txt"), header = TRUE, fill = TRUE, sep=',')
 
-### Read in TAMU and SSJV soil data ###
-ssjv.tamu.soil <- read.table(file.path(swatpathsoil, "SSJV_SSURGO_TAMU_prj_new.txt"), header = TRUE, fill = TRUE, sep=',')
+# read in TAMU soil data #
+tamu.soil <- read.csv(file.path(swatpathsoil, "SOIL_tamu.csv"), header = TRUE, fill = TRUE, sep=',')
 
-### Read in TAMU, SSJV and FINAL HRU ###
-ssjv.ssurgo.tamu.final.hru.test<- read.table(file.path(swatpathsoil, "SSJV_SSURGO_TAMU_FINAL_HRU_TEST.txt"), header = TRUE, fill = TRUE, sep=',')
+# Read in SSJV soil data #
+ssjv.soil <- read.table(file.path(swatpathsoil, "SSJV_soil.txt"), header = TRUE, fill = TRUE, sep=',')
 
-### Merge ssjv.ssurgo.tamu.final.hru.test with SWAT output ###
-hru.info.swat1 <- merge(swat.output, ssjv.ssurgo.tamu.final.hru.test, by="HRUGIS", all=T)
+### Merge dataframes ###
+
+# Merge swat.output and hru.info by HRUGIS #
+swat.output.hru <- merge(swat.output, hru.info, all = F)
+
+# Merge swat.output.hru to ssjv.soil #
+swat.output.ssjv.soil <- merge(swat.output.hru, ssjv.soil, by.x="SOIL_CODE", by.y="SEQN", all=F)
+
+# Merge tamu.soil to swat.output.ssjv.soil #
+swat.output.hru.tamu.soil <- merge(tamu.soil, swat.output.ssjv.soil, by.x="SEQN", by.y ="SOIL_CODE")
+
+# Seperate merge of ssjv and tamu soil db's #
+ssjv.tamu.soil <- merge(tamu.soil, ssjv.soil, by="SEQN")
+
 
 ##################################################################################################
 
@@ -79,9 +92,7 @@ w <- c(1,2,3,4,5,6)
 swat.hru.test <- swat_readOutputhru(file, col=w,ver=2012)
 
 ###################################################################################################
-
-### Merge HRU data to soil data
-swat.all.merged <- merge(hru.info.swat.output, ssjv.tamu.soil, by.x = "SOIL_CODE", by.y = "SEQN")
+############################ Data Summaries #######################################################
 
 
 
