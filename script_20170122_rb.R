@@ -1,41 +1,55 @@
 ### Install doBy and ggplot2 ###
 install.packages("doBy")
 install.packages("ggplot2")
+install.packages("data.table")
 
 ### Load Packages doBy for summarizing statistics and ggplot2 for plotting ###
 library("doBy")
 library("ggplot2")
+library("data.table")
 
 ### Set Directory Path - Generic and change as needed ###
-swatpath <- "C:/Users/rbyrnes/Google Drive/SWAT R Analysis/SWAT Output"
-swatpathsoil <- "C:/Users/rbyrnes/Google Drive/SWAT R Analysis/SWAT_Soil"
+swatpath <- "/Volumes/GoogleDrive/My Drive/SWAT R Analysis/SWAT Output"
+swatpathsoil <- "/Volumes/GoogleDrive/My Drive/SWAT R Analysis/SWAT_Soil"
 
 ##################################################################################################
 ########################### Read in data and merge dataframes ####################################
 
 # Read in HRU.text data from Access export #
-swat.output <- read.table(file.path(swatpath, "hru2.txt"), header = TRUE, fill = TRUE, sep=',')
+swat.output <- read.table(file.path(swatpath, "hru20180123.txt"), header = TRUE, fill = TRUE, sep=',')
+# Set as data.table #
+swat.output <- setDT(swat.output)
+# Add acres column
 swat.output$AREAacre <- swat.output$AREAkm2*247.105
 
 # Read in HRU_info data  #
-hru.info <- read.table(file.path(swatpathsoil, "FINAL_HRU.txt"), header = TRUE, fill = TRUE, sep=',')
+hru.info <- read.table(file.path(swatpath, "FINAL_HRU20180223.txt"), header = TRUE, fill = TRUE, sep=',')
+# Set as data.table #
+hru.info <- setDT(hru.info)
 
 # read in TAMU soil data #
-tamu.soil <- read.csv(file.path(swatpathsoil, "SOIL_tamu.csv"), header = TRUE, fill = TRUE, sep=',')
+#tamu.soil <- read.csv(file.path(swatpathsoil, "SOIL_tamu.csv"), header = TRUE, fill = TRUE, sep=',')
+# set as data.table #
+#tamu.soil <- setDT(tamu.soil)
 
 # Read in SSJV soil data #
 ssjv.soil <- read.table(file.path(swatpathsoil, "SSJV_soil.txt"), header = TRUE, fill = TRUE, sep=',')
+# set as data.table #
+ssjv.soil <- setDT(ssjv.soil)
 
 ### Merge dataframes ###
 
 # Merge swat.output and hru.info by HRUGIS #
-swat.output.hru <- merge(swat.output, hru.info, all = F)
+swat.output.hru <- merge(swat.output, hru.info, all =F)
+# set as data.table #
+swat.output.hru <- setDT(swat.output.hru)
 
 # Merge swat.output.hru to ssjv.soil #
-swat.output.ssjv.soil <- merge(swat.output.hru, ssjv.soil, by.x="SOIL_CODE", by.y="SEQN", all=F)
+swat.output.ssjv.soilT <- merge(swat.output.hru, ssjv.soil, by.x="SOIL_CODE", by.y="SEQN", all=T, allow.cartesian = TRUE)
+
 
 # Merge tamu.soil to swat.output.ssjv.soil #
-swat.output.hru.tamu.soil <- merge(tamu.soil, swat.output.ssjv.soil, by.x="SEQN", by.y ="SOIL_CODE")
+#swat.output.hru.tamu.soil <- merge(tamu.soil, swat.output.ssjv.soil, by.x="SEQN", by.y ="SOIL_CODE")
 
 # Seperate merge of ssjv and tamu soil db's #
 ssjv.tamu.soil <- merge(tamu.soil, ssjv.soil, by="SEQN")
