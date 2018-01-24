@@ -13,13 +13,28 @@ swatpath <- "/Volumes/GoogleDrive/My Drive/SWAT R Analysis/SWAT Output"
 swatpathsoil <- "/Volumes/GoogleDrive/My Drive/SWAT R Analysis/SWAT_Soil"
 
 ##################################################################################################
-########################### Read in data and merge dataframes ####################################
+###################### Read in data, add calculated columns to SWAT output and ###################
+###################### merge dataframes ##########################################################
 
-# Read in HRU.text data from Access export #
-swat.output <- read.table(file.path(swatpath, "hru20180123.txt"), header = TRUE, fill = TRUE, sep=',')
-# Set as data.table #
-swat.output <- setDT(swat.output)
-# Add acres column
+# Read in HRU.text data from Access export and set as data.table #
+swat.output <- setDT(read.table(file.path(swatpath, "hru20180123.txt"), header = TRUE, fill = TRUE, sep=','))
+
+# Calculate and add NUE column to swat.output #
+swat.output$NUE <- ((swat.output$NFIXkg_ha+swat.output$NUP_kg_ha)/((swat.output$NRAINkg_ha+swat.output$N_APPkg_ha+swat.output$N_AUTOkg_ha+swat.output$F_MNkg_ha+swat.output$A_MNkg_ha)-(swat.output$NO3Lkg_ha+swat.output$DNITkg_ha+swat.output$NSURQkg_ha+swat.output$NLATQkg_ha)))
+
+# Calcualte and add leaching fraction column to swat.output #
+swat.output$LFrac <- swat.output$PERCmm/(swat.output$IRRmm+swat.output$PRECIPmm-swat.output$SURQ_GENmm)
+
+# Calcualte and add runoff fraction column to swat.output #
+swat.output$RUNfrac <- swat.output$SURQ_GENmm/(swat.output$IRRmm+swat.output$PRECIPmm)
+
+# Calculate and add %N in biomass column to swat.output #
+swat.output$PctN <- ((swat.output$NUP_kg_ha/swat.output$BIOMt_ha)*.1)
+
+# Calculate and add HI column to swat.output #
+swat.output$HI <- swat.output$YLDt_ha/swat.output$BIOMt_ha
+
+# Calculate and add acres column #
 swat.output$AREAacre <- swat.output$AREAkm2*247.105
 
 # Read in HRU_info data  #
