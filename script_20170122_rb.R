@@ -2,55 +2,44 @@
 install.packages("doBy")
 install.packages("ggplot2")
 install.packages("data.table")
+install.packages("zoo")
 
 ### Load Packages doBy for summarizing statistics and ggplot2 for plotting ###
 library("doBy")
 library("ggplot2")
 library("data.table")
+library("zoo")
 
 ### Set Directory Path - Generic and change as needed ###
 swatpath <- "/Volumes/GoogleDrive/My Drive/SWAT R Analysis/SWAT Output"
 swatpathsoil <- "/Volumes/GoogleDrive/My Drive/SWAT R Analysis/SWAT_Soil"
 
 ##################################################################################################
-###################### Read in data, add calculated columns to SWAT output and ###################
+###################### Read in data, add calculated ##############################################
+###################### columns to SWAT output and ################################################
 ###################### merge dataframes ##########################################################
 
 # Read in HRU.text data from Access export and set as data.table #
 swat.output <- setDT(read.table(file.path(swatpath, "hru20180123.txt"), header = TRUE, fill = TRUE, sep=','))
 
-# Calculate and add NUE column to swat.output #
-swat.output$NUE <- ((swat.output$NFIXkg_ha+swat.output$NUP_kg_ha)/((swat.output$NRAINkg_ha+swat.output$N_APPkg_ha+swat.output$N_AUTOkg_ha+swat.output$F_MNkg_ha+swat.output$A_MNkg_ha)-(swat.output$NO3Lkg_ha+swat.output$DNITkg_ha+swat.output$NSURQkg_ha+swat.output$NLATQkg_ha)))
+# Set swat.output variables as factors and YYYYMM as date#
+swat.output$HRU <- as.factor(swat.output$HRU)
+swat.output$HRUGIS <- as.factor(swat.output$HRUGIS)
+swat.output$SUB <- as.factor(swat.output$SUB)
+swat.output$YEAR <- as.factor(swat.output$YEAR)
+swat.output$MON <- as.factor(swat.output$MON)
+swat.output$YYYYMM <- as.Date(paste0(as.character(swat.output$YYYYMM), '01'), format='%Y%m%d')
 
-# Calcualte and add leaching fraction column to swat.output #
-swat.output$LFrac <- swat.output$PERCmm/(swat.output$IRRmm+swat.output$PRECIPmm-swat.output$SURQ_GENmm)
+# Read in HRU_info data  and set as data.table#
+hru.info <- setDT(read.table(file.path(swatpath, "FINAL_HRU20180223.txt"), header = TRUE, fill = TRUE, sep=','))
 
-# Calcualte and add runoff fraction column to swat.output #
-swat.output$RUNfrac <- swat.output$SURQ_GENmm/(swat.output$IRRmm+swat.output$PRECIPmm)
-
-# Calculate and add %N in biomass column to swat.output #
-swat.output$PctN <- ((swat.output$NUP_kg_ha/swat.output$BIOMt_ha)*.1)
-
-# Calculate and add HI column to swat.output #
-swat.output$HI <- swat.output$YLDt_ha/swat.output$BIOMt_ha
-
-# Calculate and add acres column #
-swat.output$AREAacre <- swat.output$AREAkm2*247.105
-
-# Read in HRU_info data  #
-hru.info <- read.table(file.path(swatpath, "FINAL_HRU20180223.txt"), header = TRUE, fill = TRUE, sep=',')
-# Set as data.table #
-hru.info <- setDT(hru.info)
-
-# read in TAMU soil data #
-#tamu.soil <- read.csv(file.path(swatpathsoil, "SOIL_tamu.csv"), header = TRUE, fill = TRUE, sep=',')
+# read in TAMU soil data and set as data.table #
+#tamu.soil <- setDT(read.csv(file.path(swatpathsoil, "SOIL_tamu.csv"), header = TRUE, fill = TRUE, sep=','))
 # set as data.table #
 #tamu.soil <- setDT(tamu.soil)
 
-# Read in SSJV soil data #
-ssjv.soil <- read.table(file.path(swatpathsoil, "SSJV_soil.txt"), header = TRUE, fill = TRUE, sep=',')
-# set as data.table #
-ssjv.soil <- setDT(ssjv.soil)
+# Read in SSJV soil data and set as data.table#
+ssjv.soil <- setDT(read.table(file.path(swatpathsoil, "SSJV_soil.txt"), header = TRUE, fill = TRUE, sep=','))
 
 ### Merge dataframes ###
 
@@ -61,7 +50,6 @@ swat.output.hru <- setDT(swat.output.hru)
 
 # Merge swat.output.hru to ssjv.soil #
 swat.output.ssjv.soilT <- merge(swat.output.hru, ssjv.soil, by.x="SOIL_CODE", by.y="SEQN", all=T, allow.cartesian = TRUE)
-
 
 # Merge tamu.soil to swat.output.ssjv.soil #
 #swat.output.hru.tamu.soil <- merge(tamu.soil, swat.output.ssjv.soil, by.x="SEQN", by.y ="SOIL_CODE")
@@ -119,6 +107,27 @@ str(hru.output.text)
 file <- 'C:/Users/rbyrnes/Desktop/SWAT R Analysis/SWAT Output/output2.hru'
 w <- c(1,2,3,4,5,6)
 swat.hru.test <- swat_readOutputhru(file, col=w,ver=2012)
+
+##################################################################################################
+################### Calculate and add new columns ################################################
+
+# Calculate and add NUE column to swat.output #
+swat.output$NUE <- ((swat.output$NFIXkg_ha+swat.output$NUP_kg_ha)/((swat.output$NRAINkg_ha+swat.output$N_APPkg_ha+swat.output$N_AUTOkg_ha+swat.output$F_MNkg_ha+swat.output$A_MNkg_ha)-(swat.output$NO3Lkg_ha+swat.output$DNITkg_ha+swat.output$NSURQkg_ha+swat.output$NLATQkg_ha)))
+
+# Calcualte and add leaching fraction column to swat.output #
+swat.output$LFrac <- swat.output$PERCmm/(swat.output$IRRmm+swat.output$PRECIPmm-swat.output$SURQ_GENmm)
+
+# Calcualte and add runoff fraction column to swat.output #
+swat.output$RUNfrac <- swat.output$SURQ_GENmm/(swat.output$IRRmm+swat.output$PRECIPmm)
+
+# Calculate and add %N in biomass column to swat.output #
+swat.output$PctN <- ((swat.output$NUP_kg_ha/swat.output$BIOMt_ha)*.1)
+
+# Calculate and add HI column to swat.output #
+swat.output$HI <- swat.output$YLDt_ha/swat.output$BIOMt_ha
+
+# Calculate and add acres column #
+swat.output$AREAacre <- swat.output$AREAkm2*247.105
 
 ###################################################################################################
 ############################ Data Summaries #######################################################
