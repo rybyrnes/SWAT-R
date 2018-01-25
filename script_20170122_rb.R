@@ -111,6 +111,9 @@ swat.hru.test <- swat_readOutputhru(file, col=w,ver=2012)
 ##################################################################################################
 ################### Calculate and add new columns ################################################
 
+# Calculate lbs ac-1 from t ha-1 #
+swat.output$YLDt_ha <- 892.179*(swat.output$YLDt_ha)
+
 # Calculate and add NUE column to swat.output #
 swat.output$NUE <- ((swat.output$NFIXkg_ha+swat.output$NUP_kg_ha)/((swat.output$NRAINkg_ha+swat.output$N_APPkg_ha+swat.output$N_AUTOkg_ha+swat.output$F_MNkg_ha+swat.output$A_MNkg_ha)-(swat.output$NO3Lkg_ha+swat.output$DNITkg_ha+swat.output$NSURQkg_ha+swat.output$NLATQkg_ha)))
 
@@ -132,7 +135,9 @@ swat.output$AREAacre <- swat.output$AREAkm2*247.105
 ###################################################################################################
 ############################ Data Summaries #######################################################
 
+# Simple test summary #
+sum_test <- summaryBy(YLDt_ha ~ YEAR + LULC + HRU, data=swat.output)
 
-
-
+# Simple test plot summary #
+plot(YLDt_ha.mean~HRU, data=sum_test, subset = LULC=="ALMD")
 
