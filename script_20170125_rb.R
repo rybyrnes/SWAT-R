@@ -160,6 +160,9 @@ sum_test.env <- summaryBy(LAI + PRECIPmm + IRRmm + ETmm + N_APPkg_ha + N_AUTOkg_
 sum_test.env[,2:16] <- round(sum_test.env[,2:16],
                              digits=3)
 
+sum.plant.env <- merge(sum_test.plant,sum_test.env, 
+                  by = "LULC")
+
 # Simple test plot summary #
 plot(sum_test3, data=sum_test3, 
      subset = LULC=="TOMA")
