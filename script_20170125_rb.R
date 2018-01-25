@@ -139,21 +139,39 @@ swat.output$AREAacre <- swat.output$AREAkm2*247.105
 #sum_test <- summaryBy(max(YLDt_ha) ~ LULC + MON, data=swat.output)
 #sum_test2 <- aggregate(max(YLDt_ha)~LULC + MON, data=swat.output)
 
-# Simple test aggregate() #
+# Simple test aggregate()  for grain/fruit yield and biomass yield #
+# and calculated/added column for harvest index                    #
+sum_test.yld <- aggregate(YLDt_ha ~ LULC, 
+                          data = swat.output, 
+                          max)
+sum_test.biom <- aggregate(BIOMt_ha ~ LULC, 
+                           data = swat.output, 
+                           max)
+sum_test.plant <- sum_test.yld
+sum_test.plant$BIOMt_ha <- signif(sum_test.biom$BIOMt_ha, digits = 4)
+sum_test.plant$HI <- signif(sum_test.plant$YLDt_ha/sum_test.plant$BIOMt_ha,4)
 
-sum_test.yld <- aggregate(YLDt_ha ~ LULC, data = swat.output, max)
-sum_test.biom <- aggregate(BIOMt_ha ~ LULC, data = swat.output, max)
-sum_test.plant <- sum_test.yld$
-
+# Simple test aggregate()  for grain/fruit yield and biomass yield #
+# and calculated/added column for harvest index                    #
+sum_test.env <- summaryBy(LAI + PRECIPmm + IRRmm + ETmm + N_APPkg_ha + N_AUTOkg_ha + F_MNkg_ha + A_MNkg_ha +  NSURQkg_ha + NLATQkg_ha + NUP_kg_ha + DNITkg_ha + NO3Lkg_ha + NFIXkg_ha + NRAINkg_ha~ LULC,
+                          data = swat.output,
+                          keep.names = TRUE,
+                          FUN = sum)
+sum_test.env[,2:16] <- round(sum_test.env[,2:16],
+                             digits=3)
 
 # Simple test plot summary #
-plot(sum_test3, data=sum_test3, subset = LULC=="TOMA")
+plot(sum_test3, data=sum_test3, 
+     subset = LULC=="TOMA")
 
-plot(YLDt_ha.mean~LULC+MON, data=sum_test)
+plot(YLDt_ha.mean~LULC+MON, 
+     data=sum_test)
 
-plot(sum_test3~LULC, data=sum_test3)
+plot(sum_test3~LULC, 
+     data=sum_test3)
 
-plot(sum_test3, subset = sum_test$LULC=="TOMA")
+plot(sum_test3, 
+     subset = sum_test$LULC=="TOMA")
 
 
 
