@@ -41,41 +41,71 @@ swat.output$YYYYMM <- as.Date(paste0(as.character(swat.output$YYYYMM), '01'), fo
 #sum_test <- summaryBy(max(YLDt_ha) ~ LULC + MON, data=swat.output)
 #sum_test2 <- aggregate(max(YLDt_ha)~LULC + MON, data=swat.output)
 
-# Calculate lbs ac-1 from t ha-1 and rename columns #
+# Convert from metic to standard and rename columns #
 swat.output$YLDt_ha <- swat.output$YLDt_ha/2.47
 swat.output$BIOMt_ha <- swat.output$BIOMt_ha/2.47
-colnames(swat.output)[colnames(swat.output)=="YLDt_ha"] <- "YLDlbs_ac"
-colnames(swat.output)[colnames(swat.output)=="BIOMt_ha"] <- "BIOMlbs_ac"
+swat.output$PRECIPmm <- swat.output$PRECIPmm/0.0393
+swat.output$ETmm <- swat.output$ETmm/0.0393
+swat.output$PERCmm <- swat.output$PERCmm/0.0393
+swat.output$N_APPkg_ha <- swat.output$N_APPkg_ha/0.892
+swat.output$N_AUTOkg_ha <- swat.output$N_AUTOkg_ha/0.892
+swat.output$F_MNkg_ha <- swat.output$F_MNkg_ha/0.892
+swat.output$A_MNkg_ha <- swat.output$A_MNkg_ha/0.892
+swat.output$NSURQkg_ha <- swat.output$NSURQkg_ha/0.892
+swat.output$NLATQkg_ha <- swat.output$NLATQkg_ha/0.892
+swat.output$NUP_kg_ha <- swat.output$NUP_kg_ha/0.892
+swat.output$DNITkg_ha <- swat.output$DNITkg_ha/0.892
+swat.output$NO3Lkg_ha <- swat.output$NO3Lkg_ha/0.892
+swat.output$NFIXkg_ha <- swat.output$NFIXkg_ha/0.892
+swat.output$NRAINkg_ha <- swat.output$NRAINkg_ha/0.892
 
-# Simple test aggregate()  for grain/fruit yield and biomass yield #
-# and calculated/added column for harvest index                    #
-sum_test.yld <- aggregate(YLDlbs_ac ~ LULC, 
+colnames(swat.output)[colnames(swat.output)=="YLDt_ha"] <- "YLDlbs_ac" #
+colnames(swat.output)[colnames(swat.output)=="BIOMt_ha"] <- "BIOMlbs_ac" #
+colnames(swat.output)[colnames(swat.output)=="PRECIPmm"] <- "PRECIPin" #
+colnames(swat.output)[colnames(swat.output)=="IRRmm"] <- "IRRin" #
+colnames(swat.output)[colnames(swat.output)=="ETmm"] <- "ETin" #
+colnames(swat.output)[colnames(swat.output)=="N_APPkg_ha"] <- "N_APPlbs_ac" #
+colnames(swat.output)[colnames(swat.output)=="N_AUTOkg_ha"] <- "N_AUTOlbs_ac" #
+colnames(swat.output)[colnames(swat.output)=="F_MNkg_ha"] <- "F_MNlbs_ac" #
+colnames(swat.output)[colnames(swat.output)=="A_MNkg_ha"] <- "A_MNlbs_ac" #
+colnames(swat.output)[colnames(swat.output)=="NSURQkg_ha"] <- "NSURQlbs_ac" #
+colnames(swat.output)[colnames(swat.output)=="NLATQkg_ha"] <- "NLATQlbs_ac" #
+colnames(swat.output)[colnames(swat.output)=="NUP_kg_ha"] <- "NUP_lbs_ac" #
+colnames(swat.output)[colnames(swat.output)=="DNITkg_ha"] <- "DNITlbs_ac" #
+colnames(swat.output)[colnames(swat.output)=="NO3Lkg_ha"] <- "NO3Llbs_ac"
+colnames(swat.output)[colnames(swat.output)=="NFIXkg_ha"] <- "NFIXlbs_ac"
+colnames(swat.output)[colnames(swat.output)=="NRAINkg_ha"] <- "NRAINlbs_ac"
+
+
+# Simple aggregate() for grain/fruit yield and biomass yield #
+# and calculated/added column for harvest index              #
+sum.yld <- aggregate(YLDlbs_ac ~ LULC, 
                           data = swat.output, 
                           max)
-sum_test.yld$YLDlbs_ac <- round(sum_test.yld$YLDlbs_ac,
+sum.yld$YLDlbs_ac <- round(sum.yld$YLDlbs_ac,
                                 digits = 2)
-sum_test.biom <- aggregate(BIOMlbs_ac ~ LULC, 
+sum.biom <- aggregate(BIOMlbs_ac ~ LULC, 
                            data = swat.output, 
                            max)
-sum_test.plant <- sum_test.yld
-sum_test.plant$BIOMlbs_ac <- round(sum_test.biom$BIOMlbs_ac, 
+sum.plant <- sum.yld
+sum.plant$BIOMlbs_ac <- round(sum.biom$BIOMlbs_ac, 
                                    digits = 2)
-sum_test.plant$HI <- round(sum_test.plant$YLDlbs_ac/sum_test.plant$BIOMlbs_ac, 
+sum.plant$HI <- round(sum.plant$YLDlbs_ac/sum.plant$BIOMlbs_ac, 
                            digits = 2)
 
-# Simple test aggregate()  for grain/fruit yield and biomass yield #
-# and calculated/added column for harvest index                    #
-sum_test.env <- summaryBy(LAI + PRECIPmm + IRRmm + ETmm + N_APPkg_ha + N_AUTOkg_ha + F_MNkg_ha + A_MNkg_ha +  NSURQkg_ha + NLATQkg_ha + NUP_kg_ha + DNITkg_ha + NO3Lkg_ha + NFIXkg_ha + NRAINkg_ha~ LULC,
+# Simple aggregate()  for grain/fruit yield and biomass yield #
+# and calculated/added column for harvest index               #
+sum.env <- summaryBy(LAI + PRECIPin + IRRin + ETmm + N_APPlbs_ac + N_AUTOlbs_ac + F_MNlbs_ac + A_MNlbs_ac +  NSURQlbs_ac + NLATQlbs_ac + NUP_lbs_ac + DNITlbs_ac + NO3Llbs_ac + NFIXlbs_ac + NRAINlbs_ac + PERCin ~ LULC,
                           data = swat.output,
                           keep.names = TRUE,
                           FUN = sum)
-sum_test.env[,2:16] <- round(sum_test.env[,2:16],
+sum.env[,2:16] <- round(sum.env[,2:16],
                              digits=3)
 
-sum.plant.env <- merge(sum_test.plant,sum_test.env, 
+sum.plant.env <- merge(sum.plant,sum.env, 
                        by = "LULC")
 
-# Simple test plot summary #
+# Simple plot summary #
 plot(sum_test3, data=sum_test3, 
      subset = LULC=="TOMA")
 
