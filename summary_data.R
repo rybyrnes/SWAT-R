@@ -37,46 +37,6 @@ swat.output$YYYYMM <- as.Date(paste0(as.character(swat.output$YYYYMM), '01'), fo
 ###################################################################################################
 ############################ Data Summaries #######################################################
 
-# Simple test summaryBy #
-#sum_test <- summaryBy(max(YLDt_ha) ~ LULC + MON, data=swat.output)
-#sum_test2 <- aggregate(max(YLDt_ha)~LULC + MON, data=swat.output)
-
-# Convert from metic to standard and rename columns #
-swat.output$YLDt_ha <- swat.output$YLDt_ha*.405
-swat.output$BIOMt_ha <- swat.output$BIOMt_ha*.405
-swat.output$PRECIPmm <- swat.output$PRECIPmm/25.4
-swat.output$ETmm <- swat.output$ETmm/25.4
-swat.output$PERCmm <- swat.output$PERCmm/25.4
-swat.output$N_APPkg_ha <- swat.output$N_APPkg_ha*0.892
-swat.output$N_AUTOkg_ha <- swat.output$N_AUTOkg_ha*0.892
-swat.output$F_MNkg_ha <- swat.output$F_MNkg_ha*0.892
-swat.output$A_MNkg_ha <- swat.output$A_MNkg_ha*0.892
-swat.output$NSURQkg_ha <- swat.output$NSURQkg_ha*0.892
-swat.output$NLATQkg_ha <- swat.output$NLATQkg_ha*0.892
-swat.output$NUP_kg_ha <- swat.output$NUP_kg_ha*0.892
-swat.output$DNITkg_ha <- swat.output$DNITkg_ha*0.892
-swat.output$NO3Lkg_ha <- swat.output$NO3Lkg_ha*0.892
-swat.output$NFIXkg_ha <- swat.output$NFIXkg_ha*0.892
-swat.output$NRAINkg_ha <- swat.output$NRAINkg_ha*0.892
-
-colnames(swat.output)[colnames(swat.output)=="YLDt_ha"] <- "YLDt_ac" 
-colnames(swat.output)[colnames(swat.output)=="BIOMt_ha"] <- "BIOMt_ac" 
-colnames(swat.output)[colnames(swat.output)=="PRECIPmm"] <- "PRECIPin" 
-colnames(swat.output)[colnames(swat.output)=="IRRmm"] <- "IRRin" 
-colnames(swat.output)[colnames(swat.output)=="ETmm"] <- "ETin" 
-colnames(swat.output)[colnames(swat.output)=="N_APPkg_ha"] <- "N_APPlbs_ac" 
-colnames(swat.output)[colnames(swat.output)=="N_AUTOkg_ha"] <- "N_AUTOlbs_ac" 
-colnames(swat.output)[colnames(swat.output)=="F_MNkg_ha"] <- "F_MNlbs_ac" 
-colnames(swat.output)[colnames(swat.output)=="A_MNkg_ha"] <- "A_MNlbs_ac" 
-colnames(swat.output)[colnames(swat.output)=="NSURQkg_ha"] <- "NSURQlbs_ac" 
-colnames(swat.output)[colnames(swat.output)=="NLATQkg_ha"] <- "NLATQlbs_ac" 
-colnames(swat.output)[colnames(swat.output)=="NUP_kg_ha"] <- "NUP_lbs_ac" 
-colnames(swat.output)[colnames(swat.output)=="DNITkg_ha"] <- "DNITlbs_ac" 
-colnames(swat.output)[colnames(swat.output)=="NO3Lkg_ha"] <- "NO3Llbs_ac"
-colnames(swat.output)[colnames(swat.output)=="NFIXkg_ha"] <- "NFIXlbs_ac"
-colnames(swat.output)[colnames(swat.output)=="NRAINkg_ha"] <- "NRAINlbs_ac"
-colnames(swat.output)[colnames(swat.output)=="PERCmm"] <- "PERCin"
-
 # Simple aggregate() for grain/fruit yield and biomass yield #
 # and calculated/added column for harvest index    #
 
