@@ -37,50 +37,72 @@ swat.output$YYYYMM <- as.Date(paste0(as.character(swat.output$YYYYMM), '01'), fo
 ###################################################################################################
 ############################ Data Summaries #######################################################
 
-# Simple aggregate() for grain/fruit yield and biomass yield #
-# and calculated/added column for harvest index    #
-
-plot(sum.yld, data=sum.yld,subset = sum.yld$LULC=="TOMA")
-
-sum.yld.max <- aggregate(YLDt_ac ~ LULC + HRU + MON + YEAR, 
-                          data = swat.output, 
-                          max)
-sum.yld <- summaryBy(YLDt_ac ~ LULC + MON + YEAR, 
+# summary maximum value of crop yield and biomass by land use, year and HRU #
+plant.max <- summaryBy(YLDt_ha + BIOMt_ha ~ LULC + YEAR + HRU, 
                      data = swat.output, 
-                     FUN = mean)
-#sum.yld$YLDlbs_ac <- round(sum.yld$YLDlbs_ac,
-#                                digits = 2)
-sum.biom <- aggregate(BIOMlbs_ac ~ LULC + HRU, 
-                           data = swat.output, 
-                           max)
-sum.plant <- sum.yld
-sum.plant$BIOMlbs_ac <- round(sum.biom$BIOMlbs_ac, 
-                                   digits = 2)
-sum.plant$HI <- round(sum.plant$YLDlbs_ac/sum.plant$BIOMlbs_ac, 
-                           digits = 2)
+                     FUN = max,
+                     keep.names = TRUE)
 
-# Simple aggregate()  for grain/fruit yield and biomass yield #
-# and calculated/added column for harvest index               #
-sum.env.sum <- summaryBy(LAI + PRECIPin + IRRin + ETin + N_APPlbs_ac + N_AUTOlbs_ac + F_MNlbs_ac + A_MNlbs_ac +  NSURQlbs_ac + NLATQlbs_ac + NUP_lbs_ac + DNITlbs_ac + NO3Llbs_ac + NFIXlbs_ac + NRAINlbs_ac + PERCin ~ YEAR + LULC + HRU,
+# summary mean of yield and biomass by land use and year #
+plant.yr <- summaryBy(YLDt_ha + BIOMt_ha ~ LULC + YEAR,
+                     data = plant.max,
+                     FUN = mean,
+                     keep.names = TRUE)
+
+# caclulate and add harvest index column #
+plant.yr$HI <- plant.yr$YLDt_ha/plant.yr$BIOMt_ha
+
+View(plant.yr)
+
+# summary mean of yield and biomass by land use only #
+plant.lulc <- summaryBy(YLDt_ha + BIOMt_ha ~ LULC,
+                        data = plant.yr,
+                        FUN = mean,
+                        keep.names = TRUE)
+
+# calculate and add harvest index column #
+plant.lulc$HI <- plant.lulc$YLDt_ha/plant.lulc$BIOMt_ha
+
+View(plant.lulc)
+
+# Summary mean of variables by year, land use and HRU #
+env.sum <- summaryBy(LAI + PRECIPmm + IRRmm + ETmm + N_APPkg_ha + N_AUTOkg_ha + F_MNkg_ha + A_MNkg_ha +  NSURQkg_ha + NLATQkg_ha + NUP_kg_ha+ DNITkg_ha + NO3Lkg_ha + NFIXkg_ha + NRAINkg_ha + PERCmm ~ YEAR + LULC + HRU,
                           data = swat.output,
                           keep.names = TRUE,
                           FUN = sum)
 
-sum.env <- summaryBy(LAI + PRECIPin + IRRin + ETin + N_APPlbs_ac + N_AUTOlbs_ac + F_MNlbs_ac + A_MNlbs_ac +  NSURQlbs_ac + NLATQlbs_ac + NUP_lbs_ac + DNITlbs_ac + NO3Llbs_ac + NFIXlbs_ac + NRAINlbs_ac + PERCin ~ YEAR + LULC,
-                     data = sum.env.sum,
+# Summary mean of variables by HRU #
+env.yr <- summaryBy(LAI + PRECIPmm + IRRmm + ETmm + N_APPkg_ha + N_AUTOkg_ha + F_MNkg_ha + A_MNkg_ha +  NSURQkg_ha + NLATQkg_ha + NUP_kg_ha+ DNITkg_ha + NO3Lkg_ha + NFIXkg_ha + NRAINkg_ha + PERCmm  ~ YEAR + LULC,
+                     data = env.sum,
                      keep.names = TRUE,
                      FUN = mean)
 
-sum.env[,3:18] <- sum.env[,3:16] / 2612
+# merge plant.yr and env.yr #
+plant.env.yr <- merge(plant.yr, env.yr)
 
-sum.env[,3:18] <- round(sum.env[,3:18],
-                        digits=2)
+View(plant.env.yr)
 
-sum.env[,2:16] <- round(sum.env[,2:16],
-                             digits=2)
+# summary of all variables averaged by year to leave means of land use #
+plant.env.lulc <- summaryBy(YLDt_ha + BIOMt_ha + LAI + PRECIPmm + IRRmm + ETmm + N_APPkg_ha + N_AUTOkg_ha + F_MNkg_ha + A_MNkg_ha +  NSURQkg_ha + NLATQkg_ha + NUP_kg_ha+ DNITkg_ha + NO3Lkg_ha + NFIXkg_ha + NRAINkg_ha + PERCmm  ~ LULC,
+                            data = plant.env.yr,
+                            keep.names = TRUE,
+                            FUN = mean)
 
-sum.plant.env <- merge(sum.plant,sum.env, 
-                       by = "LULC")
+# Calulcate and add harvest index and round database to two digits #
+plant.env.lulc$HI <- plant.env.lulc$YLDt_ha/plant.env.lulc$BIOMt_ha
+
+# round to 2 digits #
+plant.env.lulc[,2:20] <- round(plant.env.lulc[,2:20],
+                               digits = 2)
+
+###################################################################################
+############################### View final table ##################################
+###################################################################################
+
+View(plant.env.lulc)
+
+###################################################################################
+###################################################################################
 
 # Simple plot summary #
 plot(sum_test3, data=sum_test3, 
