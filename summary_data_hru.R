@@ -58,19 +58,29 @@ env.mean <- summaryBy(LAI + PRECIPmm + IRRmm + ETmm + N_APPkg_ha + N_AUTOkg_ha +
                       keep.names = TRUE,
                       FUN = mean)
 
+
+
 # merge plant.max and env.sum #
 plant.env.hru <- merge(plant.max, env.mean)
+plant.env.hru[,(3:21)] <- round(plant.env.hru[,(3:21)],
+                                digits = 2)
 
 ###################################################################################
 ############################### View final table ##################################
 ###################################################################################
 
+summary(subset(plant.env.hru,
+               LULC == "CORN"))
+
 # View dataframe by LULC subset #
 View(subset(plant.env.hru, 
             LULC == "CORN"))
 
-# Averaged over all HRU and Years
-View(plant.env.lulc)
 
 ###################################################################################
-###################################################################################
+############################  Simple Histogram of crop yield ######################
+
+hist(subset(plant.env.hru$YLDt_ha, 
+            plant.env.hru$LULC == "CORN"))
+
+     
