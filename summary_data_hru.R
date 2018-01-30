@@ -37,87 +37,40 @@ swat.output$YYYYMM <- as.Date(paste0(as.character(swat.output$YYYYMM), '01'), fo
 ###################################################################################################
 ############################ Data Summaries #######################################################
 
-# summary maximum value of crop yield and biomass by land use, year and HRU #
-plant.max <- summaryBy(YLDt_ha + BIOMt_ha ~ LULC + YEAR + HRU, 
+# summary maximum value of crop yield and biomass by land use and HRU #
+plant.max <- summaryBy(YLDt_ha + BIOMt_ha ~ LULC + HRU, 
                        data = swat.output, 
                        FUN = max,
                        keep.names = TRUE)
 
-# summary mean of yield and biomass by land use and year #
-plant.yr <- summaryBy(YLDt_ha + BIOMt_ha ~ LULC + YEAR,
-                      data = plant.max,
-                      FUN = mean,
-                      keep.names = TRUE)
+# Calculate and add HI #
+plant.max$HI <- plant.max$YLDt_ha/plant.max$BIOMt_ha
 
-# caclulate and add harvest index column #
-plant.yr$HI <- plant.yr$YLDt_ha/plant.yr$BIOMt_ha
-
-View(plant.yr)
-
-# summary mean of yield and biomass by land use only #
-plant.lulc <- summaryBy(YLDt_ha + BIOMt_ha ~ LULC,
-                        data = plant.yr,
-                        FUN = mean,
-                        keep.names = TRUE)
-
-# calculate and add harvest index column #
-plant.lulc$HI <- plant.lulc$YLDt_ha/plant.lulc$BIOMt_ha
-
-View(plant.lulc)
-
-# Summary mean of variables by year, land use and HRU #
-env.sum <- summaryBy(LAI + PRECIPmm + IRRmm + ETmm + N_APPkg_ha + N_AUTOkg_ha + F_MNkg_ha + A_MNkg_ha +  NSURQkg_ha + NLATQkg_ha + NUP_kg_ha+ DNITkg_ha + NO3Lkg_ha + NFIXkg_ha + NRAINkg_ha + PERCmm ~ YEAR + LULC + HRU,
+# Summary mean of variables by land use and HRU #
+env.sum <- summaryBy(LAI + PRECIPmm + IRRmm + ETmm + N_APPkg_ha + N_AUTOkg_ha + F_MNkg_ha + A_MNkg_ha +  NSURQkg_ha + NLATQkg_ha + NUP_kg_ha+ DNITkg_ha + NO3Lkg_ha + NFIXkg_ha + NRAINkg_ha + PERCmm ~ LULC + HRU + YEAR,
                      data = swat.output,
                      keep.names = TRUE,
                      FUN = sum)
 
-# Summary mean of variables by HRU #
-env.yr <- summaryBy(LAI + PRECIPmm + IRRmm + ETmm + N_APPkg_ha + N_AUTOkg_ha + F_MNkg_ha + A_MNkg_ha +  NSURQkg_ha + NLATQkg_ha + NUP_kg_ha+ DNITkg_ha + NO3Lkg_ha + NFIXkg_ha + NRAINkg_ha + PERCmm  ~ YEAR + LULC,
-                    data = env.sum,
-                    keep.names = TRUE,
-                    FUN = mean)
+# Summary mean of variables by Landuse and HRU #
+env.mean <- summaryBy(LAI + PRECIPmm + IRRmm + ETmm + N_APPkg_ha + N_AUTOkg_ha + F_MNkg_ha + A_MNkg_ha +  NSURQkg_ha + NLATQkg_ha + NUP_kg_ha+ DNITkg_ha + NO3Lkg_ha + NFIXkg_ha + NRAINkg_ha + PERCmm  ~ HRU + LULC,
+                      data = env.sum,
+                      keep.names = TRUE,
+                      FUN = mean)
 
-# merge plant.yr and env.yr #
-plant.env.yr <- merge(plant.yr, env.yr)
-
-View(plant.env.yr)
-
-# summary of all variables averaged by year to leave means of land use #
-plant.env.lulc <- summaryBy(YLDt_ha + BIOMt_ha + LAI + PRECIPmm + IRRmm + ETmm + N_APPkg_ha + N_AUTOkg_ha + F_MNkg_ha + A_MNkg_ha +  NSURQkg_ha + NLATQkg_ha + NUP_kg_ha+ DNITkg_ha + NO3Lkg_ha + NFIXkg_ha + NRAINkg_ha + PERCmm  ~ LULC,
-                            data = plant.env.yr,
-                            keep.names = TRUE,
-                            FUN = mean)
-
-# Calulcate and add harvest index and round database to two digits #
-plant.env.lulc$HI <- plant.env.lulc$YLDt_ha/plant.env.lulc$BIOMt_ha
-
-# round to 2 digits #
-plant.env.lulc[,2:20] <- round(plant.env.lulc[,2:20],
-                               digits = 2)
+# merge plant.max and env.sum #
+plant.env.hru <- merge(plant.max, env.mean)
 
 ###################################################################################
 ############################### View final table ##################################
 ###################################################################################
 
+# View dataframe by LULC subset #
+View(subset(plant.env.hru, 
+            LULC == "CORN"))
+
+# Averaged over all HRU and Years
 View(plant.env.lulc)
 
 ###################################################################################
 ###################################################################################
-
-# Simple plot summary #
-plot(sum_test3, data=sum_test3, 
-     subset = LULC=="TOMA")
-
-plot(YLDt_ha.mean~LULC+MON, 
-     data=sum_test)
-
-plot(sum_test3~LULC, 
-     data=sum_test3)
-
-plot(sum_test3, 
-     subset = sum_test$LULC=="TOMA")
-
-
-grid.newpage()
-grid.ftable(plant.env.lulc, padding = unit(0.1, "mm"), 
-            x = 10, y = 10)
