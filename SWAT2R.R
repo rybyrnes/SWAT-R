@@ -17,7 +17,8 @@
 # Started    : 27-Feb-2009                                             #
 # Updates    : 02-Oct-2009                                             #
 #              22-Jan-2011 at JRC                                      #
-#              17-Apr-2012 at JRC ; 09-Aug-2012                        #
+#              17-Apr-2012 at JRC ; 09-Aug-2012 
+#              02-Feb-2018 by RCB  
 ########################################################################
 
 # The last (additional) rows have the average value for each subbasin during all the time period
@@ -28,9 +29,7 @@
 #                stands for daily, monthly and annual times steps
 # 'out.type': Type of results that have to be read
 #                Must be one of the following values: 
-#               -) "Q"       : only results related to water quantity are read (first 8 columns)
-#                              c("RCH", "GIS", "MON", "DrAREAkm2", 
-#                                "FLOW_INcms", "FLOW_OUTcms", "EVAPcms", "TLOSScms")
+#               -) "All"       : All HRU variables included
 #               -) "Q+Sed"   : only results related to water quantity AND sediments are read (first 11 columns)
 #                               c("RCH", "GIS", "MON", "DrAREAkm2", "FLOW_INcms", "FLOW_OUTcms", 
 #                                 "EVAPcms", "TLOSScms", "SED_INtons", "SED_OUTtons", "SEDCONCmg/kg")
@@ -38,7 +37,7 @@
 # 'hruID'      : OPTIONAL. Integer with the number of the reach for wich the results will be provided.
 #                If this argument is not provided, the results will be given for all the reaches in 'output.hru'
 read_hru <- function(file="output.hru", 
-                     out.type="Q", 
+                     out.type="All", 
                      hruID=NA, 
                      col.names=NULL,          # character with the column name in 'file' that stores the results that the user wants to convert into a zoo object
                      tstep,                    
@@ -60,8 +59,8 @@ read_hru <- function(file="output.hru",
       stop("Invalid argument value: 'tstep' must be in c('daily', 'monthly', 'annual')" ) }
   
   # Checking that the user provided a valid value for 'out.type'    
-  if ( is.na( match(out.type, c("Q", "Q+Sed", "Q+Sed+WQ") ) ) ) {
-    stop("Invalid argument value: 'out.type' must be in c('Q', 'Q+Sed', 'Q+Sed+WQ')" ) }
+  if ( is.na( match(out.type, c("All", "Q+Sed", "Q+Sed+WQ") ) ) ) {
+    stop("Invalid argument value: 'out.type' must be in c('All', 'Q+Sed', 'Q+Sed+WQ')" ) }
   
   hru.names <- c("LULC", "HRU", "GIS", "SUB", "MGT", "MON", 
                  "AREAkm2", "PRECIPmm", "SNOFALLmm", "SNOMELTmm", "IRRmm", 
@@ -106,7 +105,7 @@ read_hru <- function(file="output.hru",
     print( paste("[Reading the file '", basename(file), "' ...]", sep="" ), quote=FALSE  ) 
   
   # Reading the output file of the simulation
-  if (out.type=="Q") {
+  if (out.type=="All") {
     
     # Reading only the 35 variables related to water quantity. 
     # A4   : LULC, 
@@ -119,7 +118,8 @@ read_hru <- function(file="output.hru",
     #          "SA_STmm", "DA_STmm", "SURQ_GENmm", "SURQ_CNTmm", "TLOSSmm", 
     #          "LATQmm", "GW_Qmm", "WYLDmm", "DAILYCN", "TMP_AVdgC", 
     #          "TMP_MXdgC", "TMP_MNdgC", "SOL_TMPdgC", "SOLARMJ/m2",
-    hru <- read.fortran(file, header=FALSE, skip=9, c("A4", "I5", "I9", "3F5", "29F10"))    
+    hru <- read.fortran(file, header=FALSE, skip=9, c("A4", "I5", "3F5", "29F10", "2F10", "37F10", "2F11" ,"13F10"))
+    
     
     # Assigning the names
     colnames(hru) <- hru.names[1:35]
