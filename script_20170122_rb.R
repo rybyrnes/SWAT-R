@@ -11,8 +11,8 @@ library("data.table")
 library("zoo")
 
 ### Set Directory Path - Generic and change as needed ###
-swatpath <- "/Volumes/GoogleDrive/My Drive/SWAT R Analysis/SWAT Output"
-swatpathsoil <- "/Volumes/GoogleDrive/My Drive/SWAT R Analysis/SWAT_Soil"
+swatpath <- "C:/Users/rbyrnes/Google Drive/SWAT R Analysis/SWAT Output"
+swatpathsoil <- "C:/Users/rbyrnes/Google Drive/SWAT R Analysis/SWAT_Soil"
 
 ##################################################################################################
 ###################### Read in data, add calculated ##############################################
@@ -136,8 +136,14 @@ swat.output$AREAacre <- swat.output$AREAkm2*247.105
 ############################ Data Summaries #######################################################
 
 # Simple test summary #
-sum_test <- summaryBy(YLDt_ha ~ YEAR + LULC + HRU, data=swat.output)
+sum_test <- summaryBy(max(YLDt_ha) ~ LULC + MON, data=swat.output)
+
+sum_test2 <- aggregate(max(YLDt_))
 
 # Simple test plot summary #
-plot(YLDt_ha.mean~HRU, data=sum_test, subset = LULC=="ALMD")
+plot(YLDt_ha.mean~MON, data=sum_test, subset = LULC=="TOMA")
+
+plot(YLDt_ha.mean~LULC+MON, data=sum_test)
+
+
 
