@@ -62,16 +62,17 @@ read_hru <- function(file="output.hru",
   if ( is.na( match(out.type, c("All", "Q+Sed", "Q+Sed+WQ") ) ) ) {
     stop("Invalid argument value: 'out.type' must be in c('All', 'Q+Sed', 'Q+Sed+WQ')" ) }
   
-  hru.names <- c('LULC','HRU','HRUGIS','SUB', 'YEAR', 'MON','AREAkm2','PRECIPmm','SNOFALLmm','SNOMELTmm','IRRmm',
-                 'PETmm','ETmm','SW_INITmm','SW_ENDmm','PERCmm','GW_RCHGmm','DA_RCHGmm','REVAPmm','SA_IRRmm','test',
-                 'SA_STmm','DA_STmm','SURQ_GENmm','SURQ_CNTmm','TLOSSmm','LATQmm','GW_Qmm','WYLD_Qmm','DAILYCN',
+  # Column names may neeed to adapt for different time steps though #
+  hru.names <- c('LULC','HRU','HRUGIS','SUB', 'MGT', 'MON','AREAkm2','PRECIPmm','SNOFALLmm','SNOMELTmm','IRRmm',
+                 'PETmm','ETmm','SW_INITmm','SW_ENDmm','PERCmm','GW_RCHGmm','DA_RCHGmm','REVAPmm','SA_IRRmm',
+                 'DA_IRmm', 'SA_STmm', 'DA_STmm','SURQ_GENmm','SURQ_CNTmm','TLOSSmm','LATQmm','GW_Qmm','WYLD_Qmm','DAILYCN',
                  'TMP_AVdgC','TMP_MXdgC','TMP_MNdgC','SOL_TMPdgC','SOLARmj_m2','SYLDt_ha','USLEt_ha',
                  'N_APPkg_ha','P_APPkg_ha','N_AUTOkg_ha','P_AUTOkg_ha','NGRZkg_ha', 'PGRZkg_ha','NCFRTkg_ha',
                  'PCFRTkg_ha','NRAINkg_ha','NFIXkg_ha','F_MNkg_ha','A_MNkg_ha','A_SNkg_ha','F_MPkg_ha','AO_LPkg_ha',
                  'L_APkg_ha','A_SPkg_ha','DNITkg_ha','NUP_kg_ha','PUP_kg_ha','ORGNkg_ha','ORGPkg_ha','SEDPkg_ha',
                  'NSURQkg_ha','NLATQkg_ha','NO3Lkg_ha','NO3GWkg_ha','SOLPkg_ha','P_GWkg_ha','W_STRS',
                  'TMP_STRS','N_STRS','P_STRS','BIOMt_ha','LAI','YLDt_ha','BACTPct','BACTLPct',
-                 'WTAB','WTABELO','SNOmm','CMUPkg_ha','CMTOTkg_ha','QTILEmm','TNO3kg_ha','LNO3kg_ha','YYMMMM','test')
+                 'WTAB','SNOmm','CMUPkg_ha','CMTOTkg_ha','QTILEmm','TNO3kg_ha','GW_QDmm', 'LATQCNmm','TVAPkg_ha')
   
   #~ hru.widths <- c(4,5,9,5,5,5,
   #~ 10,10,10,10,10,10,10,10,10,10, 10,10,10,10,10,10,10,10,10,10,
@@ -98,22 +99,13 @@ read_hru <- function(file="output.hru",
   # Reading the output file of the simulation
   if (out.type=="All") {
     
-    # Reading only the 35 variables related to water quantity. 
-    # A4   : LULC, 
-    # I5   : HRU; 
-    # I9   : GIS; 
-    # 3F5  : SUB, MGT, MON (not always is an integer !!)
-    # 29F10:  "AREAkm2", "PRECIPmm", "SNOFALLmm", "SNOMELTmm", "IRRmm", 
-    #          "PETmm", "ETmm", "SW_INITmm", "SW_ENDmm", "PERCmm", 
-    #          "GW_RCHGmm", "DA_RCHGmm", "REVAPmm", "SA_IRRmm", "DA_IRRmm", 
-    #          "SA_STmm", "DA_STmm", "SURQ_GENmm", "SURQ_CNTmm", "TLOSSmm", 
-    #          "LATQmm", "GW_Qmm", "WYLDmm", "DAILYCN", "TMP_AVdgC", 
-    #          "TMP_MXdgC", "TMP_MNdgC", "SOL_TMPdgC", "SOLARMJ/m2",
-    hru <- read.fortran(file, header=FALSE, skip=9, c("A4", "I5", "3F5", "29F10", "2F10", "37F10", "2F11" ,"13F10"))
+    # Reading all variables; two columns at the end of the database needed to be extended to 11 spaces. 
+    
+    hru <- read.fortran(file, header=FALSE, skip=9, c("A4", "I5", "I9","3F5", "29F10", "2F10", "37F10", "2F11" ,"13F10"))
     
     
     # Assigning the names
-    colnames(hru) <- hru.names[1:35]
+    colnames(hru) <- hru.names
     
   } else if (out.type=="Q+Sed") {
     
