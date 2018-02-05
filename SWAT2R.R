@@ -101,7 +101,7 @@ read_hru <- function(file="output.hru",
     
     # Reading all variables; two columns at the end of the database needed to be extended to 11 spaces. 
     
-    hru <- read.fortran(file, header=FALSE, skip=9, c("A4", "I5", "I9","3F5", "29F10", "2F10", "37F10", "2F11" ,"13F10"))
+    hru <- read.fortran(file, header=FALSE, skip=9, c("A4", "I5", "I10","3F5", "29F10", "2F10", "37F10", "2F11" ,"13F10"))
     
     
     # Assigning the names
@@ -126,6 +126,10 @@ read_hru <- function(file="output.hru",
   
   # From character to factor
   hru$LULC <- as.factor(hru$LULC)
+  hru$HRUGIS <- as.factor(hru$HRUGIS)
+  hru$SUB <- as.factor(hru$SUB)
+  hru$MGT <- as.factor(hru$HRUGIS)
+  hru$MON <- as.factor(hru$MON)
   
   # If the user provided a reach numer, only those results will be returned to the user  
   if ( !missing(hruID) ) {
