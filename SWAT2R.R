@@ -63,7 +63,7 @@ read_hru <- function(file="output.hru",
     stop("Invalid argument value: 'out.type' must be in c('All', 'Q+Sed', 'Q+Sed+WQ')" ) }
   
   # Column names may neeed to adapt for different time steps though #
-  hru.names <- c('LULC','HRU','HRUGIS','SUB', 'MGT', 'MON','AREAkm2','PRECIPmm','SNOFALLmm','SNOMELTmm','IRRmm',
+  hru.names <- c('LULC','HRU','HRUGIS','SUB', 'MGT','MON','AREAkm2','PRECIPmm','SNOFALLmm','SNOMELTmm','IRRmm',
                  'PETmm','ETmm','SW_INITmm','SW_ENDmm','PERCmm','GW_RCHGmm','DA_RCHGmm','REVAPmm','SA_IRRmm',
                  'DA_IRmm', 'SA_STmm', 'DA_STmm','SURQ_GENmm','SURQ_CNTmm','TLOSSmm','LATQmm','GW_Qmm','WYLD_Qmm','DAILYCN',
                  'TMP_AVdgC','TMP_MXdgC','TMP_MNdgC','SOL_TMPdgC','SOLARmj_m2','SYLDt_ha','USLEt_ha',
@@ -72,7 +72,7 @@ read_hru <- function(file="output.hru",
                  'L_APkg_ha','A_SPkg_ha','DNITkg_ha','NUP_kg_ha','PUP_kg_ha','ORGNkg_ha','ORGPkg_ha','SEDPkg_ha',
                  'NSURQkg_ha','NLATQkg_ha','NO3Lkg_ha','NO3GWkg_ha','SOLPkg_ha','P_GWkg_ha','W_STRS',
                  'TMP_STRS','N_STRS','P_STRS','BIOMt_ha','LAI','YLDt_ha','BACTPct','BACTLPct',
-                 'WTAB','SNOmm','CMUPkg_ha','CMTOTkg_ha','QTILEmm','TNO3kg_ha','GW_QDmm', 'LATQCNmm','TVAPkg_ha')
+                 'WTAB','SOLmm','SNOmm','CMUPkg_ha','CMTOTkg_ha','QTILEmm','TNO3kg_ha','GW_QDmm', 'LATQCNmm','TVAPkg_ha')
   
   #~ hru.widths <- c(4,5,9,5,5,5,
   #~ 10,10,10,10,10,10,10,10,10,10, 10,10,10,10,10,10,10,10,10,10,
