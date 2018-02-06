@@ -63,16 +63,16 @@ read_hru <- function(file="output.hru",
     stop("Invalid argument value: 'out.type' must be in c('All', 'Q+Sed', 'Q+Sed+WQ')" ) }
   
   # Column names may neeed to adapt for different time steps though #
-  hru.names <- c('LULC','HRU','HRUGIS','SUB', 'MGT','MON','AREAkm2','PRECIPmm','SNOFALLmm','SNOMELTmm','IRRmm',
-                 'PETmm','ETmm','SW_INITmm','SW_ENDmm','PERCmm','GW_RCHGmm','DA_RCHGmm','REVAPmm','SA_IRRmm',
-                 'DA_IRmm', 'SA_STmm', 'DA_STmm','SURQ_GENmm','SURQ_CNTmm','TLOSSmm','LATQmm','GW_Qmm','WYLD_Qmm','DAILYCN',
-                 'TMP_AVdgC','TMP_MXdgC','TMP_MNdgC','SOL_TMPdgC','SOLARmj_m2','SYLDt_ha','USLEt_ha',
-                 'N_APPkg_ha','P_APPkg_ha','N_AUTOkg_ha','P_AUTOkg_ha','NGRZkg_ha', 'PGRZkg_ha','NCFRTkg_ha',
-                 'PCFRTkg_ha','NRAINkg_ha','NFIXkg_ha','F_MNkg_ha','A_MNkg_ha','A_SNkg_ha','F_MPkg_ha','AO_LPkg_ha',
-                 'L_APkg_ha','A_SPkg_ha','DNITkg_ha','NUP_kg_ha','PUP_kg_ha','ORGNkg_ha','ORGPkg_ha','SEDPkg_ha',
-                 'NSURQkg_ha','NLATQkg_ha','NO3Lkg_ha','NO3GWkg_ha','SOLPkg_ha','P_GWkg_ha','W_STRS',
-                 'TMP_STRS','N_STRS','P_STRS','BIOMt_ha','LAI','YLDt_ha','BACTPct','BACTLPct',
-                 'WTAB','SOLmm','SNOmm','CMUPkg_ha','CMTOTkg_ha','QTILEmm','TNO3kg_ha','GW_QDmm', 'LATQCNmm','TVAPkg_ha')
+  hru.names <-  hru.names <- c('LULC','HRU','HRUGIS','SUB', 'MGT','MON','AREAkm2','PRECIPmm','SNOFALLmm','SNOMELTmm','IRRmm',
+                               'PETmm','ETmm','SW_INITmm','SW_ENDmm','PERCmm','GW_RCHGmm','DA_RCHGmm','REVAPmm','SA_IRRmm',
+                               'DA_IRmm', 'SA_STmm', 'DA_STmm','SURQ_GENmm','SURQ_CNTmm','TLOSSmm','LATQmm','GW_Qmm','WYLD_Qmm','DAILYCN',
+                               'TMP_AVdgC','TMP_MXdgC','TMP_MNdgC','SOL_TMPdgC','SOLARmj_m2','SYLDt_ha','USLEt_ha',
+                               'N_APPkg_ha','P_APPkg_ha','N_AUTOkg_ha','P_AUTOkg_ha','NGRZkg_ha', 'PGRZkg_ha','NCFRTkg_ha',
+                               'PCFRTkg_ha','NRAINkg_ha','NFIXkg_ha','F_MNkg_ha','A_MNkg_ha','A_SNkg_ha','F_MPkg_ha','AO_LPkg_ha',
+                               'L_APkg_ha','A_SPkg_ha','DNITkg_ha','NUP_kg_ha','PUP_kg_ha','ORGNkg_ha','ORGPkg_ha','SEDPkg_ha',
+                               'NSURQkg_ha','NLATQkg_ha','NO3Lkg_ha','NO3GWkg_ha','SOLPkg_ha','P_GWkg_ha','W_STRS',
+                               'TMP_STRS','N_STRS','P_STRS','BIOMt_ha','LAI','YLDt_ha','BACTPct','BACTLPct',
+                               'WTAB','SOLmm','SNOmm','CMUPkg_ha','CMTOTkg_ha','QTILEmm','TNO3kg_ha','GW_QDmm', 'LATQCNmm','TVAPkg_ha')
   
   #~ hru.widths <- c(4,5,9,5,5,5,
   #~ 10,10,10,10,10,10,10,10,10,10, 10,10,10,10,10,10,10,10,10,10,
@@ -101,10 +101,11 @@ read_hru <- function(file="output.hru",
     
     # Reading all variables; two columns at the end of the database needed to be extended to 11 spaces. 
     
-    hru <- read.fortran(file, header=FALSE, skip=9, c("A4", "I5", "I10","3F5", "29F10", "2F10", "37F10", "2F11" ,"13F10"))
+    hru <- read.fortran(file, header=FALSE, skip=9, 
+                         c("A4", "I5", "I10","3F5", "68F10", "2F11" ,"9F10"))
     
     
-    # Assigning the names
+    # Assigning the names, maybe change this to different columns of interest? for NUE?
     colnames(hru) <- hru.names
     
   } else if (out.type=="Q+Sed") {
@@ -124,12 +125,17 @@ read_hru <- function(file="output.hru",
     
   } # ELSE end
   
-  # From character to factor
-  hru$LULC <- as.factor(hru$LULC)
-  hru$HRUGIS <- as.factor(hru$HRUGIS)
-  hru$SUB <- as.factor(hru$SUB)
-  hru$MGT <- as.factor(hru$HRUGIS)
-  hru$MON <- as.factor(hru$MON)
+  # Apply Column names
+  colnames(test) <- hru.names
+  # Remove YEAR value rows
+  test <-test[test$MON <= 12 ,]
+  #Convert columns to factors
+  test$LULC <- as.factor(test$LULC)
+  test$HRU <- as.factor(test$HRU)
+  test$HRUGIS <- as.factor(test$HRUGIS)
+  test$SUB <- as.factor(test$SUB)
+  test$MGT <- as.factor(test$HRUGIS)
+  test$MON <- as.factor(test$MON)
   
   # If the user provided a reach numer, only those results will be returned to the user  
   if ( !missing(hruID) ) {
