@@ -36,7 +36,7 @@ read_SWAT2012hru <- function(file="output.hru",
     # Assigning the names, maybe change this to different columns of interest? for NUE?
     colnames(hru) <- hru.names
 
-    # For some reason the .hru file for the monthly output prints some yearly aggregation after 12 months
+    # For some reason the .hru file for the monthly output prints some yearly aggregation #after 12 months
     # just removing those rows here
     hru <-hru[hru$MON <= 12 ,]
 

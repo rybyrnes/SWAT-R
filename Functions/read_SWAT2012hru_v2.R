@@ -1,3 +1,6 @@
+
+# http://santiago.begueria.es/2013/10/reading-swat-output-hru-files-in-r/
+
 swat_readOutputhru <- function(file,col=NULL,hru=NULL,YEAR=NULL,lulc=NULL,ver=2012) {
 
     # format of the .hru file (SWAT 2012)
@@ -16,9 +19,9 @@ swat_readOutputhru <- function(file,col=NULL,hru=NULL,YEAR=NULL,lulc=NULL,ver=20
         col=c(4,5,10,rep(5,3),rep(10,68), rep(11,2), rep(10,9)))
 
 
-        if (class(cols)=='numeric') {
-            col <- fmt$var[cols]
-        }
+        #if (class(cols)=='numeric') {
+        #    col <- fmt$var[cols]
+        #}
 
         # select columns
         if (!is.null(col)) {
