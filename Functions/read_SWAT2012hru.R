@@ -2,7 +2,9 @@
 # 2018-02-07 - RByrnes : Adapted from SWAT2R read_hru script; http://www.rforge.net/SWAT2R/ ;http://cran.r-project.org/web/packages/SWAT2R (not available yet)
 
 read_SWAT2012hru <- function(file="output.hru",
-                     verbose=TRUE
+                     verbose=TRUE,
+                     #StartY,
+                     #EndY,
 ){
 
   # Checking that 'file' exists
