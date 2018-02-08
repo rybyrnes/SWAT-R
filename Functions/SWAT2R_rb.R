@@ -87,4 +87,4 @@ read_hru <- function(file="output.hru",
 
   return(hru)
 
-} # 'read_hru' END
+} # 'read_hru ' END
