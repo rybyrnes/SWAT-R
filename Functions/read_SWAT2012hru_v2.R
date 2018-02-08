@@ -1,5 +1,5 @@
 
-# http://santiago.begueria.es/2013/10/reading-swat-output-hru-files-in-r/
+#  http://santiago.begueria.es/2013/10/reading-swat-output-hru-files-in-r/
 
 swat_readOutputhru <- function(file,col=NULL,hru=NULL,YEAR=NULL,lulc=NULL,ver=2012) {
 
