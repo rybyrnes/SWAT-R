@@ -25,26 +25,19 @@ system.time(test2 <- swat_readOutputhru(file))
 ###################################################################################################
 ############################ Data Summaries #######################################################
 
-plant.max <- summaryBy(YLDt_ha + BIOMt_ha ~ LULC + HRU + MON + YEAR, 
+plant.max <- summaryBy(YLDt_ha + BIOMt_ha ~ LULC + HRU + YEAR, 
                    data = test2, 
                    FUN = max,
                    keep.names = TRUE)
-plant.mean <- summaryBy(YLDt_ha + BIOMt_ha ~ LULC + HRU + YEAR, 
-                       data = plant.max, 
-                       FUN = mean,
-                       keep.names = TRUE)
 
-env.sum <- summaryBy(LAI + PRECIPmm + IRRmm + ETmm + N_APPkg_ha + N_AUTOkg_ha + F_MNkg_ha + A_MNkg_ha +  NSURQkg_ha + NLATQkg_ha + NUP_kg_ha+ DNITkg_ha + NO3Lkg_ha + NFIXkg_ha + NRAINkg_ha + PERCmm ~ LULC + HRU + MON + YEAR,
+env.sum <- summaryBy(LAI + PRECIPmm + IRRmm + ETmm + N_APPkg_ha + N_AUTOkg_ha + F_MNkg_ha + A_MNkg_ha +  NSURQkg_ha + NLATQkg_ha + NUP_kg_ha+ DNITkg_ha + NO3Lkg_ha + NFIXkg_ha + NRAINkg_ha + PERCmm ~ LULC + HRU + YEAR,
                      data = test2,
                      keep.names = TRUE,
                      FUN = sum)
 
-env.mean <- summaryBy(LAI + PRECIPmm + IRRmm + ETmm + N_APPkg_ha + N_AUTOkg_ha + F_MNkg_ha + A_MNkg_ha +  NSURQkg_ha + NLATQkg_ha + NUP_kg_ha+ DNITkg_ha + NO3Lkg_ha + NFIXkg_ha + NRAINkg_ha + PERCmm ~ LULC + HRU + YEAR,
-                                data = env.sum,
-                                keep.names = TRUE,
-                                FUN = mean)
-                   
-merged.output <- merge(plant.mean, env.mean)
+#### Merge data tables ####
+
+merged.output <- merge(plant.max, env.sum)
 
 ######## Tables ########
 
