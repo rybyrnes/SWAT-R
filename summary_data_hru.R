@@ -46,23 +46,21 @@ env.mean <- summaryBy(LAI + PRECIPmm + IRRmm + ETmm + N_APPkg_ha + N_AUTOkg_ha +
                    
 merged.output <- merge(plant.mean, env.mean)
 
-###################################################################################
-############################### View final table ##################################
-###################################################################################
+######## Tables ########
 
-summary(subset(merged.output,
-               LULC == "TOMA"))
+summary(subset(merged.output$YLDt_ha,
+               merged.output$LULC == "TOMA"))
 
 # View dataframe by LULC subset #
 View(subset(merged.output, 
             LULC == "TOMA"))
 
 
-
-###################################################################################
-############################  Simple Histogram of crop yield ######################
+######## Histograms #####
 
 hist(subset(plant.env.hru$YLDt_ha, 
             plant.env.hru$LULC == "CORN"))
+
+
 
      
