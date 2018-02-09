@@ -48,10 +48,10 @@ swat_readOutputhru <- function(file,col=NULL,hru=NULL,YEAR=NULL,lulc=NULL,ver=20
 
         # select hrus by number or by lulc
         if (!is.null(hru)) {
-            res <- res[res$HRU>=min(hru) & res$HRU<=max(hru),]
+            res2 <<- res[res$HRU>=min(hru) & res$HRU<=max(hru),]
         }
         if (!is.null(lulc)) {
-            res <- res[res$LULC==lulc,]
+            res3 <<- res[res$LULC==lulc,]
         }
 
         # monthly and annual tables
@@ -77,10 +77,10 @@ swat_readOutputhru <- function(file,col=NULL,hru=NULL,YEAR=NULL,lulc=NULL,ver=20
         rownames(mon) <- rownames(anu) <- NULL
         cols <- which(colnames(mon)=='MON')
         ww <- which(colnames(mon)=='YEAR')
-        mon2 <<- mon[,c(colnames(mon)[c(1:cols)],'YEAR',colnames(mon)[-c(1:cols,ww)])]
+        mon <<- mon[,c(colnames(mon)[c(1:cols)],'YEAR',colnames(mon)[-c(1:cols,ww)])]
 
         # go
-        return(list(mon=mon,anu=anu))
+        #return(list(mon=mon,anu=anu))
 
         mon$LULC <- as.factor(mon$LULC)
         mon$HRU <- as.factor(mon$HRU)
@@ -90,6 +90,6 @@ swat_readOutputhru <- function(file,col=NULL,hru=NULL,YEAR=NULL,lulc=NULL,ver=20
         #mon$MON <- as.factor(mon$MON)
         #mon$YEAR <- as.factor(mon$YEAR)
 
-        #return(mon)
+        return(mon)
 
     }
