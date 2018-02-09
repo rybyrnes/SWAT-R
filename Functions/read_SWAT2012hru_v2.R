@@ -44,7 +44,7 @@ swat_readOutputhru <- function(file,col=NULL,hru=NULL,YEAR=NULL,lulc=NULL,ver=20
             head=F,skip=9,encoding='latin1',
             strip.white=TRUE,nrow=-1,buffersize=20000)
         colnames(res) <- fmt$var
-        res <- res[order(res$HRU),]
+        res <<- res[order(res$HRU),]
 
         # select hrus by number or by lulc
         if (!is.null(hru)) {
