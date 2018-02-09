@@ -43,25 +43,26 @@ swat_readOutputhru <- function(file,col=NULL,hru=NULL,YEAR=NULL,lulc=NULL,ver=20
         res <- read.fwf(file,fmt$col,
             head=F,skip=9,encoding='latin1',
             strip.white=TRUE,nrow=-1,buffersize=20000)
+
         colnames(res) <- fmt$var
-        res <<- res[order(res$HRU),]
+        res <- res[order(res$HRU),]
 
         # select hrus by number or by lulc
         if (!is.null(hru)) {
-            res2 <<- res[res$HRU>=min(hru) & res$HRU<=max(hru),]
+            res <- res[res$HRU>=min(hru) & res$HRU<=max(hru),]
         }
         if (!is.null(lulc)) {
-            res3 <<- res[res$LULC==lulc,]
+            res <- res[res$LULC==lulc,]
         }
 
         # monthly and annual tables
-        mon <<- res[res$MON<=12,]
-        anu <<- res[res$MON>12,]
+        mon <- res[res$MON<=12,]
+        anu <- res[res$MON>12,]
 
         colnames(anu) <- sub('MON','YEAR',colnames(anu))
-        cols <<- which(mon$HRU==mon$HRU[1] & mon$MON==mon$MON[1])
-        ww <<- c((cols-1)[-1],nrow(mon))
-        years <<- min(anu$YEAR):max(anu$YEAR)
+        cols <- which(mon$HRU==mon$HRU[1] & mon$MON==mon$MON[1])
+        ww <- c((cols-1)[-1],nrow(mon))
+        years <- min(anu$YEAR):max(anu$YEAR)
         mon$YEAR <- NA ## I think the fuckup starts here
         for (i in 1:length(cols)) {
             mon[cols[i]:ww[i],][,'YEAR'] <- years[i]
@@ -69,15 +70,15 @@ swat_readOutputhru <- function(file,col=NULL,hru=NULL,YEAR=NULL,lulc=NULL,ver=20
 
         # select years
         if (!is.null(YEAR)) {
-            mon <<- mon[mon$YEAR>=min(YEAR) & mon$YEAR<=max(YEAR),] ### this is fucked up already
-            anu <<- anu[anu$YEAR>=min(YEAR) & anu$YEAR<=max(YEAR),] #this looks okay...
+            mon <- mon[mon$YEAR>=min(YEAR) & mon$YEAR<=max(YEAR),] ### this is fucked up already
+            anu <- anu[anu$YEAR>=min(YEAR) & anu$YEAR<=max(YEAR),] #this looks okay...
         }
 
         # rearrange
         rownames(mon) <- rownames(anu) <- NULL
         cols <- which(colnames(mon)=='MON')
         ww <- which(colnames(mon)=='YEAR')
-        mon <<- mon[,c(colnames(mon)[c(1:cols)],'YEAR',colnames(mon)[-c(1:cols,ww)])]
+        mon <- mon[,c(colnames(mon)[c(1:cols)],'YEAR',colnames(mon)[-c(1:cols,ww)])]
 
         # go
         #return(list(mon=mon,anu=anu))
