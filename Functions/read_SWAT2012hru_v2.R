@@ -56,22 +56,25 @@ swat_readOutputhru <- function(file,col=NULL,hru=NULL,YEAR=NULL,lulc=NULL,ver=20
         }
 
         # monthly and annual tables
+        res <- res[!(res$MON=="10.7"),]
         mon <- res[res$MON<=12,]
         anu <- res[res$MON>12,]
+        
 
         colnames(anu) <- sub('MON','YEAR',colnames(anu))
         cols <- which(mon$HRU==mon$HRU[1] & mon$MON==mon$MON[1])
         ww <- c((cols-1)[-1],nrow(mon))
         years <- min(anu$YEAR):max(anu$YEAR)
-        mon$YEAR <- NA ## I think the fuckup starts here
+
+        mon$YEAR <- NA
         for (i in 1:length(cols)) {
             mon[cols[i]:ww[i],][,'YEAR'] <- years[i]
         }
 
         # select years
         if (!is.null(YEAR)) {
-            mon <- mon[mon$YEAR>=min(YEAR) & mon$YEAR<=max(YEAR),] ### this is fucked up already
-            anu <- anu[anu$YEAR>=min(YEAR) & anu$YEAR<=max(YEAR),] #this looks okay...
+            mon <- mon[mon$YEAR>=min(YEAR) & mon$YEAR<=max(YEAR),]
+            anu <- anu[anu$YEAR>=min(YEAR) & anu$YEAR<=max(YEAR),]
         }
 
         # rearrange
