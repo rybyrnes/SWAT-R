@@ -19,41 +19,40 @@ swat_readOutputhru <- function(file,col=NULL,hru=NULL,YEAR=NULL,lulc=NULL,ver=20
         col=c(4,5,10,rep(5,3),rep(10,68), rep(11,2), rep(10,9)))
 
 
-        #if (class(cols)=='numeric') {
-        #    col <- fmt$var[cols]
-        #}
-
-        # select columns
-        if (!is.null(col)) {
-            if (!('MON' %in% col)) {
-                col <- c('MON',col)
-            }
-            if (!('LULC' %in% col)) {
-                col <- c('LULC',col)
-            }
-            if (!('HRU' %in% col)) {
-                col <- c('HRU',col)
-            }
-            cols <- fmt$var %in% col
-            fmt$var <- fmt$var[cols]
-            fmt$col <- ifelse(cols,fmt$col,-fmt$col)
-        }
-
-        # read file, rearrange table
-        res <- read.fwf(file,fmt$col,
-            head=F,skip=9,encoding='latin1',
-            strip.white=TRUE,nrow=-1,buffersize=20000)
-
-        colnames(res) <- fmt$var
-        res <- res[order(res$HRU),]
-
-        # select hrus by number or by lulc
-        if (!is.null(hru)) {
-            res <- res[res$HRU>=min(hru) & res$HRU<=max(hru),]
-        }
-        if (!is.null(lulc)) {
-            res <- res[res$LULC==lulc,]
-        }
+    if (class(w)=='numeric') {
+      col <- fmt$var[w]
+    }
+    
+    # select columns
+    if (!is.null(col)) {
+      if (!('MON' %in% col)) {
+        col <- c('MON',col)
+      }
+      if (!('LULC' %in% col)) {
+        col <- c('LULC',col)
+      }
+      if (!('HRU' %in% col)) {
+        col <- c('HRU',col)
+      }
+      w <- fmt$var %in% col
+      fmt$var <- fmt$var[w]
+      fmt$col <- ifelse(w,fmt$col,-fmt$col)
+    }
+    
+    # read file, rearrange table
+    res <- read.fwf(file,fmt$col,
+                    head=F,skip=9,encoding='latin1',
+                    strip.white=TRUE,nrow=-1,buffersize=20000)
+    colnames(res) <- fmt$var
+    res <- res[order(res$HRU),]
+    
+    # select hrus by number or by lulc
+    if (!is.null(hru)) {
+      res <- res[res$HRU>=min(hru) & res$HRU<=max(hru),]
+    }
+    if (!is.null(lulc)) {
+      res <- res[res$LULC==lulc,]
+    }
 
         # monthly and annual tables
         res <- res[!(res$MON=="10.7"),]
@@ -65,24 +64,23 @@ swat_readOutputhru <- function(file,col=NULL,hru=NULL,YEAR=NULL,lulc=NULL,ver=20
         cols <- which(mon$HRU==mon$HRU[1] & mon$MON==mon$MON[1])
         ww <- c((cols-1)[-1],nrow(mon))
         years <- min(anu$YEAR):max(anu$YEAR)
-
         mon$YEAR <- NA
         for (i in 1:length(cols)) {
-            mon[cols[i]:ww[i],][,'YEAR'] <- years[i]
+          mon[cols[i]:ww[i],][,'YEAR'] <- years[i]
         }
-
+        
         # select years
         if (!is.null(YEAR)) {
-            mon <- mon[mon$YEAR>=min(YEAR) & mon$YEAR<=max(YEAR),]
-            anu <- anu[anu$YEAR>=min(YEAR) & anu$YEAR<=max(YEAR),]
+          mon <- mon[mon$YEAR>=min(YEAR) & mon$YEAR<=max(YEAR),]
+          anu <- anu[anu$YEAR>=min(YEAR) & anu$YEAR<=max(YEAR),]
         }
-
+        
         # rearrange
         rownames(mon) <- rownames(anu) <- NULL
         cols <- which(colnames(mon)=='MON')
         ww <- which(colnames(mon)=='YEAR')
         mon <- mon[,c(colnames(mon)[c(1:cols)],'YEAR',colnames(mon)[-c(1:cols,ww)])]
-
+        
         # go
         #return(list(mon=mon,anu=anu))
 
@@ -91,6 +89,9 @@ swat_readOutputhru <- function(file,col=NULL,hru=NULL,YEAR=NULL,lulc=NULL,ver=20
         mon$HRUGIS <- as.factor(mon$HRUGIS)
         mon$SUB <- as.factor(mon$SUB)
         mon$MGT <- as.factor(mon$HRUGIS)
+        mon$BACTPct <- as.numeric(mon$BACTPct)
+        mon$BACTLPct <- as.numeric(mon$BACTLPct)
+        mon$WTAB <- as.numeric(mon$WTAB)
         #mon$MON <- as.factor(mon$MON)
         #mon$YEAR <- as.factor(mon$YEAR)
 
