@@ -43,7 +43,10 @@ swat_readOutputhru <- function(file,col=NULL,hru=NULL,YEAR=NULL,lulc=NULL,ver=20
         res <- read.fwf(file,fmt$col,
             head=F,skip=9,encoding='latin1',
             strip.white=TRUE,nrow=-1,buffersize=20000)
+<<<<<<< HEAD
 
+=======
+>>>>>>> a0c6261a32e6cd4ac16bf2e926993d8e0bed9ffd
         colnames(res) <- fmt$var
         res <- res[order(res$HRU),]
 
@@ -56,6 +59,7 @@ swat_readOutputhru <- function(file,col=NULL,hru=NULL,YEAR=NULL,lulc=NULL,ver=20
         }
 
         # monthly and annual tables
+<<<<<<< HEAD
         res <- res[!(res$MON=="10.7"),]
         mon <<- res[res$MON<=12,]
         anu <<- res[res$MON>12,]
@@ -84,13 +88,47 @@ swat_readOutputhru <- function(file,col=NULL,hru=NULL,YEAR=NULL,lulc=NULL,ver=20
         # go
         #return(list(mon=mon,anu=anu))
 
+=======
+        mon <- res[res$MON<=12,]
+        anu <- res[res$MON>12,]
+
+        colnames(anu) <- sub('MON','YEAR',colnames(anu))
+        cols <- which(mon$HRU==mon$HRU[1] & mon$MON==mon$MON[1])
+        ww <- c((cols-1)[-1],nrow(mon))
+        years <- min(anu$YEAR):max(anu$YEAR)
+        mon$YEAR <- NA
+        for (i in 1:length(cols)) {
+            mon[cols[i]:ww[i],][,'YEAR'] <- years[i]
+        }
+
+        # select years
+        if (!is.null(YEAR)) {
+            mon <- mon[mon$YEAR>=min(YEAR) & mon$YEAR<=max(YEAR),]
+            anu <- anu[anu$YEAR>=min(YEAR) & anu$YEAR<=max(YEAR),]
+        }
+
+        # rearrange
+        rownames(mon) <- rownames(anu) <- NULL
+        cols <- which(colnames(mon)=='MON')
+        ww <- which(colnames(mon)=='YEAR')
+        mon <- mon[,c(colnames(mon)[c(1:cols)],'YEAR',colnames(mon)[-c(1:cols,ww)])]
+
+        # go
+        #return(list(mon=mon,anu=anu))
+        #return(mon)
+>>>>>>> a0c6261a32e6cd4ac16bf2e926993d8e0bed9ffd
         mon$LULC <- as.factor(mon$LULC)
         mon$HRU <- as.factor(mon$HRU)
         mon$HRUGIS <- as.factor(mon$HRUGIS)
         mon$SUB <- as.factor(mon$SUB)
         mon$MGT <- as.factor(mon$HRUGIS)
+<<<<<<< HEAD
         #mon$MON <- as.factor(mon$MON)
         #mon$YEAR <- as.factor(mon$YEAR)
+=======
+        mon$MON <- as.factor(mon$MON)
+        mon$YEAR <- as.factor(mon$YEAR)
+>>>>>>> a0c6261a32e6cd4ac16bf2e926993d8e0bed9ffd
 
         return(mon)
 
