@@ -69,7 +69,7 @@ swat_readOutputhru <- function(file,col=NULL,hru=NULL,YEAR=NULL,lulc=NULL,ver=20
   browser()
   
   years <- min(anu$YEAR):max(anu$YEAR)
-  browswer()
+  browser()
   
   mon$YEAR <- NA ## I think the fuckup starts here
   
