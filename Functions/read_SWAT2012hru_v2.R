@@ -60,30 +60,33 @@ swat_readOutputhru <- function(file,col=NULL,hru=NULL,YEAR=NULL,lulc=NULL,ver=20
   anu <- res[res$MON>12,]
   
   colnames(anu) <- sub('MON','YEAR',colnames(anu))
-  browser()
+  ###browser()
   
   cols <- which(mon$HRU==mon$HRU[1] & mon$MON==mon$MON[1])
-  browser()
+  ##browser()
   
   ww <- c((cols-1)[-1],nrow(mon))
-  browser()
+  ##browser()
   
   years <- min(anu$YEAR):max(anu$YEAR)
-  browser()
+  ##browser()
   
   mon$YEAR <- NA ## I think the fuckup starts here
   
   
-  for (i in 1:length(cols)) browser()
+  for (i in 1:length(cols)) ##browser()
   {
     browser()
     mon[cols[i]:ww[i],][,'YEAR'] <- years[i]
   }
   
+  browser() # before here is where issues happen, somthing with the way the loop is running over the cols and ww objects
+  
   # select years
-  if (!is.null(YEAR)) browser()
+  if (!is.null(YEAR)) ##browser()
   {
     mon <- mon[mon$YEAR>=min(YEAR) & mon$YEAR<=max(YEAR),] ### this is fucked up already
+    browser()
     anu <- anu[anu$YEAR>=min(YEAR) & anu$YEAR<=max(YEAR),] #this looks okay...
   }
   

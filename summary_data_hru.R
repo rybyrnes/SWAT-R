@@ -24,7 +24,7 @@ file <- "/Volumes/GoogleDrive/My Drive/SWAT R Analysis/SWAT Output/output.hru" #
 
 #source(file.path(functions,'read_SWAT2012hru_v2.R')) # read in function
 
-test2 <- swat_readOutputhru(file) # import .hru file)
+test3 <- swat_readOutputhru(file) # import .hru file)
 str(#test3 <- read.table(file, header = TRUE, sep = ",") # import .hru file
 
 ###################################################################################################
