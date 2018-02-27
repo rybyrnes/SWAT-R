@@ -3,12 +3,18 @@ install.packages("doBy")
 install.packages("ggplot2")
 install.packages("reshape")
 install.packages("dplyr")
+install.packages("SWATmodel")
+
+source("https://r-forge.r-project.org/scm/viewvc.php/*checkout*/pkg/SWATmodel/R/readSWAT.R?root=ecohydrology")
+
 
 ### Load Packages doBy for summarizing statistics and ggplot2 for plotting ###
 library("doBy")
 library("ggplot2")
 library("reshape")
 library("dplyr")
+library("SWATmodel")
+
 
 ### Set Directory Path - Generic and change as needed ###
 
@@ -23,22 +29,24 @@ file <- "/Volumes/GoogleDrive/My Drive/SWAT R Analysis/SWAT Output/output.hru" #
 ###################### merge dataframes ##########################################################
 
 #source(file.path(functions,'read_SWAT2012hru_v2.R')) # read in function
+source(file.path(functions,'output_HRU_v2.R')) # read in function
 
-test3 <- swat_readOutputhru(file) # import .hru file)
-str(#test3 <- read.table(file, header = TRUE, sep = ",") # import .hru file
+system.time(test4 <- swat_readOutputhru(file)) # import .hru file
+#test5 <- readSWAT(outfile_type="hru", pathtofile="file") # import .hru file
+?#str(#test3 <- read.table(file, header = TRUE, sep = ",") # import .hru file
 
 ###################################################################################################
 ############################ Data Summaries #######################################################
 
 # summary of maximum value of yield and biomass by LULC, HRU and YEAR
 plant.max <- summaryBy(YLDt_ha + BIOMt_ha ~ LULC + HRU + YEAR, 
-                   data = test3, 
+                   data = test4, 
                    FUN = max,
                    keep.names = TRUE)
 
 # summary of sum of variables of interest, must sum because monthly values are not additive
 env.sum <- summaryBy(LAI + PRECIPmm + IRRmm + ETmm + N_APPkg_ha + N_AUTOkg_ha + F_MNkg_ha + A_MNkg_ha +  NSURQkg_ha + NLATQkg_ha + NUP_kg_ha+ DNITkg_ha + NO3Lkg_ha + NFIXkg_ha + NRAINkg_ha + PERCmm ~ LULC + HRU + YEAR,
-                     data = test3,
+                     data = test4,
                      keep.names = TRUE,
                      FUN = sum)
 
@@ -46,7 +54,7 @@ env.sum <- summaryBy(LAI + PRECIPmm + IRRmm + ETmm + N_APPkg_ha + N_AUTOkg_ha + 
 
 # merged databases to unify variables of interest, now we have one dataframe with all the variables
 # and can now run further summary queries to extract mean values by HRU, LULC or YEAR
-merged.output <- merge(plant.max, env.sum)
+merged.output <- merge(plant.max, env.sum, by="HRU")
 
 merged.summary <- summaryBy(.~LULC + YEAR,
                             data = merged.output,
